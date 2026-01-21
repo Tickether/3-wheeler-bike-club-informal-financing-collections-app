@@ -31,6 +31,9 @@ const ContractSchema = new mongoose.Schema(
         location: {
             type: String,
         },
+        deposit: {
+            type: Number,
+        },
         duration: {
             type: Number,
         },
