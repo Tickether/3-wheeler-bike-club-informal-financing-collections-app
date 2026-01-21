@@ -37,22 +37,24 @@ const ContractSchema = new mongoose.Schema(
         amount: {
             type: Number,
         },
-        payment: {
-            amount: {
-              type: Number,
-            },
-            method: {
-              type: String,
-              enum: ["momo", "cash"],
-            },
-            reference: {
-              type: Date,
-            },
-            status: {
-              type: String,
-              enum: ["full", "partial"],
-            },
-        },
+        payments: [
+            {
+                amount: {
+                    type: Number,
+                },
+                method: {
+                    type: String,
+                    enum: ["momo", "cash"],
+                },
+                reference: {
+                    type: Date,
+                },
+                status: {
+                    type: String,
+                    enum: ["full", "partial"],
+                },
+            }
+        ],
         createdAt: {
             type: Date,
             default: Date.now,
