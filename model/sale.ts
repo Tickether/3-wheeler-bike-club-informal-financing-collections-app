@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 
-const ContractSchema = new mongoose.Schema(
+const SaleSchema = new mongoose.Schema(
     {
         branch: {
             type: String,
@@ -37,19 +37,14 @@ const ContractSchema = new mongoose.Schema(
             vin: {
                 type: String,
             },
+            papers: {
+                type: String,
+            },
         },
         amount: {
             type: Number,
         },
-        status: {
-            type: String,
-            enum: ["pending", "active", "defaulted", "completed"],
-        },
         createdAt: {
-            type: Date,
-            default: Date.now,
-        },
-        updatedAt: {
             type: Date,
             default: Date.now,
         },
@@ -60,6 +55,6 @@ const ContractSchema = new mongoose.Schema(
 
 )
 
-const Contract = mongoose.models.Contract || mongoose.model("Contract", ContractSchema)
+const Sale = mongoose.models.Sale || mongoose.model("Sale", SaleSchema)
 
-export default Contract
+export default Sale

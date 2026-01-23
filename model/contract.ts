@@ -2,10 +2,6 @@ import mongoose from "mongoose"
 
 const ContractSchema = new mongoose.Schema(
     {
-        id: {
-            type: String,
-            required: true,
-        },
         branch: {
             type: String,
             enum: ["kasoa", "kumasi"],

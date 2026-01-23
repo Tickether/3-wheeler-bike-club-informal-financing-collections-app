@@ -1,6 +1,6 @@
 import connectDB from "@/utils/db/mongodb"
 import { middleware } from "@/utils/db/middleware"
-import Contract from "@/model/contract"
+import Sale from "@/model/sale"
 
 export async function POST(
     req: Request,
@@ -10,17 +10,17 @@ export async function POST(
         return authResponse
     }
 
-    const { branch, owner, vehicle } = await req.json()
+    const { branch, customer, vehicle, amount } = await req.json()
 
     try {
         await connectDB()
-        const contract = await Contract.create({ 
+        const sale = await Sale.create({ 
             branch: branch,
-            owner: owner,
+            customer: customer,
             vehicle: vehicle,
-            status: "pending",
+            amount: amount,
         })
-        return new Response(JSON.stringify(contract))
+        return new Response(JSON.stringify(sale))
     } catch (error) {
         return new Response(JSON.stringify({ message: "Internal Server Error" }), { status: 500 })
     }
