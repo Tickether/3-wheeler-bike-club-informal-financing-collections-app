@@ -3,6 +3,7 @@ declare global {
     namespace NodeJS {
         interface ProcessEnv {
             MONGO: string;
+            BASE_URL: string;
             THREEWB_API_KEY: string;
             NEXT_PUBLIC_PRIVY_APP_ID: string;
         }
