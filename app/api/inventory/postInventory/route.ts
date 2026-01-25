@@ -18,6 +18,7 @@ export async function POST(
             branch: branch,
             vehicle: vehicle,
             amount: amount,
+            status: "in stock",
         })
         return new Response(JSON.stringify(inventory))
     } catch (error) {

@@ -7,7 +7,6 @@ export interface Inventory {
     vehicle: {
         type: "motorcycle" | "tricycle"
         model: string
-        year: string
         color: string
         vin: string
         papers: string

@@ -14,9 +14,6 @@ const InventorySchema = new mongoose.Schema(
             model: {
                 type: String,
             },
-            year: {
-                type: String,
-            },
             color: {
                 type: String,
             },
