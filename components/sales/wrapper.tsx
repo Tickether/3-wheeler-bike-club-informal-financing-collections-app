@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 import { useGetSales } from "@/hooks/useGetSales";
 import { AddSale } from "./addSale";
+import { useGetInventory } from "@/hooks/useGetInventory";
 
 export function Wrapper() {
 
 
-    const { sales, loading, error, getBackSales } = useGetSales()
+    const { sales, loading: salesLoading, error: salesError, getBackSales } = useGetSales()
+    const { inventory, loading: inventoryLoading, error: inventoryError, getBackInventory } = useGetInventory()
 
     
     return (
@@ -37,7 +39,7 @@ export function Wrapper() {
             <div className="flex w-full h-full justify-center">
                 <div className="flex w-full h-full max-w-[66rem]">
                     {
-                        loading && (
+                        salesLoading && (
                             <>
                             <div className="flex h-full w-full justify-center items-center text-2xl font-bold">
                                 <p>Loading...</p>
@@ -59,7 +61,7 @@ export function Wrapper() {
                                         </EmptyDescription>
                                     </EmptyHeader>
                                     <EmptyContent>
-                                        <AddSale />
+                                        <AddSale inventory={inventory} />
                                     </EmptyContent>
                                 </Empty>
                             </>
