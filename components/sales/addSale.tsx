@@ -102,7 +102,7 @@ export function AddSale({ inventory }: AddSaleProps) {
                 Record a new sale transaction of a vehicle sold.
             </DialogDescription>
           </DialogHeader>
-            <div className="flex flex-col p-4">
+            <div className="flex flex-col p-4 no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
                 <form
                   className="space-y-6"
                   id="add-sale-form"
