@@ -123,7 +123,7 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
           );
           if (postInventory) {
             toast.success("Vehicle Stock Added to Inventory", {
-              description: "You can now add another vehicle to the inventory",
+              description: "You can now add another vehicle to the inventory or close this dialog",
             })
             setIsSubmitting(false);
             addInventoryForm.reset();

@@ -3,10 +3,11 @@
 import { Package, Plus, TriangleAlert } from "lucide-react";
 import { Menu } from "@/components/top/menu";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 import { useGetInventory } from "@/hooks/useGetInventory";
-import { AddInventory } from "./addInventory";
+import { AddInventory } from "@/components/inventory/addInventory";
+import { columns } from "@/components/inventory/columns";
+import { DataTable } from "@/components/inventory/dataTable";
 
 export function Wrapper() {
 
@@ -16,7 +17,7 @@ export function Wrapper() {
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
                 <Menu/>
                 
-                <div className="flex flex-col h-full w-full gap-6">
+                <div className="flex flex-col h-full w-full gap-12">
                     <div className="flex w-full justify-center">
                         <div className="w-full max-w-[66rem]">
                             <Alert>
@@ -65,6 +66,12 @@ export function Wrapper() {
                             {
                                 inventory && inventory.length >= 1 && (
                                     <>
+                                        <div className="flex flex-col w-full gap-4">
+                                            <div className="flex justify-end">
+                                                <AddInventory getInventory={getBackInventory} />
+                                            </div>
+                                            <DataTable columns={columns} data={inventory} />
+                                        </div>
                                     </>
                                 )
                             }
