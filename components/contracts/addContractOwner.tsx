@@ -92,7 +92,7 @@ export function AddContractOwner() {
                 Create a new work contract pending driver assignment.
             </DialogDescription>
           </DialogHeader>
-            <div className="flex flex-col p-4">
+            <div className="flex flex-col p-4 no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
                 <form
                   className="space-y-6"
                   id="add-sale-form"
