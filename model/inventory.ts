@@ -19,9 +19,10 @@ const InventorySchema = new mongoose.Schema(
             },
             vin: {
                 type: String,
+                unique: true,
             },
             papers: {
-                type: String,
+                type: [String],
             },
         },
         amount: {

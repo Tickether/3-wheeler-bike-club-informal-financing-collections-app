@@ -56,7 +56,7 @@ export function Wrapper() {
                                                 </EmptyDescription>
                                             </EmptyHeader>
                                             <EmptyContent>
-                                                <AddInventory />
+                                                <AddInventory getInventory={getBackInventory} />
                                             </EmptyContent>
                                         </Empty>
                                     </>

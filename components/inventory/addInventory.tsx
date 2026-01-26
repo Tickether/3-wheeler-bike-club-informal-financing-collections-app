@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Caravan, CloudUpload, Motorbike, Paperclip, Plus } from "lucide-react"
+import { Caravan, CirclePile, CloudUpload, Loader2, Motorbike, Paperclip, Plus, Save } from "lucide-react"
 import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import * as z from "zod"
@@ -28,6 +28,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSepa
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "@/components/ui/file-upload"
 import { shortenTxt } from "@/utils/shorten"
+import { useState } from "react"
+import { useUploadThing } from "@/hooks/useUploadThing"
+import { postInventoryAction } from "@/app/actions/inventory/postInventoryAction"
 
 // Helper function to format number with commas
 const formatNumberWithCommas = (value: string): string => {
@@ -40,23 +43,52 @@ const formatNumberWithCommas = (value: string): string => {
 
 const addInventoryFormSchema = z.object({
   branch: z
-    .string(),
+    .string()
+    .min(1, "Branch is required"),
   vehicleType: z
-    .string(),
+  .string()
+  .min(1, "Vehicle type is required"),
   vehicleModel: z
-    .string(),
+    .string()
+    .min(1, "Vehicle model is required"),
   vehicleColor: z
-    .string(),
+    .string()
+    .min(1, "Vehicle color is required"),
   vehicleVin: z
-    .string(),
+    .string()
+    .min(1, "VIN is required"),
   vehiclePapers: z
     .array(z.instanceof(File))
-    .nullable(),
+    .length(4, "Upload all required files"),
   amount: z
-    .string(),
+    .string()
+    .min(1, "Amount is required"),
 })
 
-export function AddInventory() {
+export interface AddInventoryProps {
+  getInventory: () => void
+}
+
+export function AddInventory({ getInventory }: AddInventoryProps) {
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const { startUpload, routeConfig } = useUploadThing("vehicleDocumentUploader", {
+    onClientUploadComplete: () => {
+      toast.info("Vehicle Documents Uploaded", {
+        description: "Please wait while we save the rest of your details",
+      })
+    },
+    onUploadError: () => {
+      toast.error("Failed to upload files.", {
+        description: `Something went wrong, please try again`,
+      })
+      setIsSubmitting(false);
+    },
+    onUploadBegin: (file: string) => {
+      console.log("upload has begun for", file);
+    },
+  });
 
   const addInventoryForm = useForm({
     defaultValues: {
@@ -65,7 +97,7 @@ export function AddInventory() {
       vehicleModel: "",
       vehicleColor: "",
       vehicleVin: "",
-      vehiclePapers: null as File[] | null,
+      vehiclePapers: [] as File[],
       amount: "",
 
     },
@@ -73,7 +105,44 @@ export function AddInventory() {
       onSubmit: addInventoryFormSchema,
     },
     onSubmit: async ({ value }) => {
+      setIsSubmitting(true)
       console.log(value)
+      try {
+        const uploadFiles = await startUpload(value.vehiclePapers);
+        if (uploadFiles) {
+          const postInventory = await postInventoryAction(
+            value.branch,
+            {
+              type: value.vehicleType as "motorcycle" | "tricycle",
+              model: value.vehicleModel,
+              color: value.vehicleColor,
+              vin: value.vehicleVin,
+              papers: uploadFiles.map((file) => file.ufsUrl),
+            },
+            Number(value.amount),
+          );
+          if (postInventory) {
+            toast.success("Vehicle Stock Added to Inventory", {
+              description: "You can now add another vehicle to the inventory",
+            })
+            setIsSubmitting(false);
+            addInventoryForm.reset();
+            getInventory();
+          }
+        } else {
+          toast.error("Failed to upload files.", {
+            description: `Something went wrong, please try again`,
+          })
+          setIsSubmitting(false)
+        }
+
+      } catch (error) {
+        console.error("Form submission error", error);
+        toast.error("Failed to submit the form.", {
+          description: `Something went wrong, please try again`,
+        })
+        setIsSubmitting(false)
+      }
     },
   })
 
@@ -115,8 +184,9 @@ export function AddInventory() {
                                 <Select
                                   value={field.state.value}
                                   onValueChange={(value) => field.handleChange(value)}
+                                  disabled={isSubmitting}
                                 >
-                                  <SelectTrigger className="w-full">
+                                  <SelectTrigger className="w-full" disabled={isSubmitting}>
                                   <SelectValue placeholder="Select a branch" />
                                   </SelectTrigger>
                                   <SelectContent>
@@ -147,6 +217,7 @@ export function AddInventory() {
                               className="max-w-full"
                               value={field.state.value}
                               onValueChange={(value) => field.handleChange(value)}
+                              disabled={isSubmitting}
                             >
                               <FieldLabel htmlFor="motorcycle">
                                 <Field orientation="horizontal">
@@ -185,8 +256,9 @@ export function AddInventory() {
                             <Select
                               value={field.state.value}
                               onValueChange={(value) => field.handleChange(value)}
+                              disabled={isSubmitting}
                             >
-                              <SelectTrigger className="w-full">
+                              <SelectTrigger className="w-full" disabled={isSubmitting}>
                                 <SelectValue placeholder="Select a vehicle model" />
                               </SelectTrigger>
                               <SelectContent>
@@ -222,8 +294,9 @@ export function AddInventory() {
                                 <Select
                                   value={field.state.value}
                                   onValueChange={(value) => field.handleChange(value)}
+                                  disabled={isSubmitting}
                                 >
-                                  <SelectTrigger className="w-full">
+                                  <SelectTrigger className="w-full" disabled={isSubmitting}>
                                   <SelectValue placeholder="Select a color" />
                                   </SelectTrigger>
                                   <SelectContent
@@ -269,6 +342,7 @@ export function AddInventory() {
                                   placeholder="MD6M14PA2R4NO1944"
                                   autoComplete="off"
                                   style={{ textTransform: 'uppercase' }}
+                                  disabled={isSubmitting}
                                 />
                                 {isInvalid && (
                                   <FieldError errors={field.state.meta.errors} />
@@ -288,8 +362,12 @@ export function AddInventory() {
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                             <FieldLabel htmlFor={field.name} className="text-primary">Papers</FieldLabel>
                                 <FileUploader
-                                    value={field.state.value || null}
-                                    onValueChange={(files) => field.handleChange(files)}
+                                    value={field.state.value}
+                                    onValueChange={(files) => {
+                                      if (!isSubmitting) {
+                                        field.handleChange(files || [])
+                                      }
+                                    }}
                                     dropzoneOptions={{
                                         maxFiles: 4,
                                         maxSize: 1024 * 1024 * 4,
@@ -297,8 +375,9 @@ export function AddInventory() {
                                         accept: {
                                             "application/*": [".pdf"],
                                         },
+                                        disabled: isSubmitting,
                                     }}
-                                    className="relative bg-background rounded-lg p-2"
+                                    className={`relative bg-background rounded-lg p-2 ${isSubmitting ? 'pointer-events-none opacity-50' : ''}`}
                                 >
                                     <FileInput
                                         id="national-fileInput"
@@ -311,13 +390,12 @@ export function AddInventory() {
                                                 or drag and drop
                                             </p>
                                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                PDF
+                                                PDF (Exactly 4 files required)
                                             </p>
                                         </div>
                                     </FileInput>
                                     <FileUploaderContent>
-                                        {field.state.value &&
-                                            field.state.value.length > 0 &&
+                                        {field.state.value.length > 0 &&
                                             field.state.value.map((file, i) => (
                                                 <FileUploaderItem key={i} index={i}>
                                                     <Paperclip className="h-4 w-4 stroke-current" />
@@ -359,6 +437,7 @@ export function AddInventory() {
                                   autoComplete="off"
                                   type="text"
                                   inputMode="numeric"
+                                  disabled={isSubmitting}
                                 />
                                 {isInvalid && (
                                   <FieldError errors={field.state.meta.errors} />
@@ -371,10 +450,11 @@ export function AddInventory() {
                     
                   </FieldGroup>
                   <Field orientation="horizontal" className="flex justify-end gap-2 mt-12">
-                    <Button type="button" variant="outline" onClick={() => addInventoryForm.reset()}>
+                    <Button type="button" variant="outline" onClick={() => addInventoryForm.reset()} disabled={isSubmitting}>
                       Reset
                     </Button>
-                    <Button type="submit" form="add-inventory-form">
+                    <Button type="submit" form="add-inventory-form" disabled={isSubmitting}>
+                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CirclePile className="h-4 w-4" />}
                       Submit
                     </Button>
                   </Field>

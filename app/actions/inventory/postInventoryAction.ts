@@ -2,7 +2,13 @@
 
 export async function postInventoryAction(
     branch: string,
-    vehicle: string,
+    vehicle: {
+        type: "motorcycle" | "tricycle"
+        model: string
+        color: string
+        vin: string
+        papers: string[]
+    },
     amount: number,
 ) {
     try {
