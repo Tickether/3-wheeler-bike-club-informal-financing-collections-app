@@ -130,7 +130,7 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
             getInventory();
           }
         } else {
-          toast.error("Failed to upload files.", {
+          toast.error("Failed to post inventory.", {
             description: `Something went wrong, please try again`,
           })
           setIsSubmitting(false)

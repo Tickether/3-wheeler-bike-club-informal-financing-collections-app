@@ -6,29 +6,12 @@ const SaleSchema = new mongoose.Schema(
             type: String,
             enum: ["kasoa", "kumasi"],
         },
-        customer: {
-            firstname: {
-                type: Number,
-            },
-            othername: {
-                type: Number,
-            },
-            lastname: {
-                type: String,
-            },
-            phone: {
-                type: String,
-            },
-        },
         vehicle: {
             type: {
                 type: String,
                 enum: ["motorcycle", "tricycle"],
             },
             model: {
-                type: String,
-            },
-            year: {
                 type: String,
             },
             color: {
@@ -38,6 +21,20 @@ const SaleSchema = new mongoose.Schema(
                 type: String,
             },
             papers: {
+                type: [String],
+            },
+        },
+        customer: {
+            firstname: {
+                type: String,
+            },
+            othername: {
+                type: String,
+            },
+            lastname: {
+                type: String,
+            },
+            phone: {
                 type: String,
             },
         },

@@ -8,6 +8,8 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyCont
 import { useGetSales } from "@/hooks/useGetSales";
 import { AddSale } from "./addSale";
 import { useGetInventory } from "@/hooks/useGetInventory";
+import { columns } from "./columns";
+import { DataTable } from "./dataTable";
 
 export function Wrapper() {
 
@@ -61,7 +63,7 @@ export function Wrapper() {
                                         </EmptyDescription>
                                     </EmptyHeader>
                                     <EmptyContent>
-                                        <AddSale inventory={inventory} />
+                                        <AddSale inventory={inventory!} getSales={getBackSales} />
                                     </EmptyContent>
                                 </Empty>
                             </>
@@ -70,6 +72,12 @@ export function Wrapper() {
                     {
                         sales && sales.length >= 1 && (
                             <>
+                            <div className="flex flex-col w-full gap-4">
+                                <div className="flex justify-end">
+                                    <AddSale inventory={inventory!} getSales={getBackSales} />
+                                </div>
+                                <DataTable columns={columns} data={sales} />
+                            </div>
                             </>
                         )
                     }

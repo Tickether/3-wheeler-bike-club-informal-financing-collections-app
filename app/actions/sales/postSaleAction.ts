@@ -2,8 +2,19 @@
 
 export async function postSaleAction(
     branch: string,
-    customer: string,
-    vehicle: string,
+    vehicle: {
+        type: "motorcycle" | "tricycle"
+        model: string
+        color: string
+        vin: string
+        papers: string[]
+    },
+    customer: {
+        firstname: string
+        othername: string
+        lastname: string
+        phone: string
+    },
     amount: number,
 ) {
     try {
@@ -15,8 +26,8 @@ export async function postSaleAction(
             },
             body: JSON.stringify({ 
                 branch: branch,
-                customer: customer,
                 vehicle: vehicle,
+                customer: customer,
                 amount: amount,
             })
         })

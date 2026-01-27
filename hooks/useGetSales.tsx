@@ -4,19 +4,18 @@ import { useState, useEffect } from "react"
 export interface Sale {
     _id: string
     branch: "kasoa" | "kumasi"
+    vehicle: {
+        type: "motorcycle" | "tricycle"
+        model: string
+        color: string
+        vin: string
+        papers: string[]
+    }
     customer: {
         firstname: number
         othername: number
         lastname: string
         phone: string
-    }
-    vehicle: {
-        type: "motorcycle" | "tricycle"
-        model: string
-        year: string
-        color: string
-        vin: string
-        papers: string
     }
     amount: number
     createdAt: Date
