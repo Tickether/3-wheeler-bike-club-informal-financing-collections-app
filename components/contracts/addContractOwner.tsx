@@ -145,11 +145,11 @@ export function AddContractOwner({ getContracts }: AddContractOwnerProps) {
           <div className="mx-auto w-full max-w-sm pb-6">
           <DialogHeader>
             <DialogTitle>Add Work Contract</DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="mb-4">
                 Create a new work contract pending driver assignment.
             </DialogDescription>
           </DialogHeader>
-            <div className="flex flex-col p-4 no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
+            <div className="flex flex-col p-4 no-scrollbar -mx-4 h-[50vh] overflow-y-auto">
                 <form
                   className="space-y-6"
                   id="add-sale-form"
@@ -500,21 +500,21 @@ export function AddContractOwner({ getContracts }: AddContractOwnerProps) {
                         )
                       }}
                     />
-                    
-                    
                   </FieldGroup>
-                  <Field orientation="horizontal" className="flex justify-end gap-2 mt-12">
-                    <Button type="button" variant="outline" onClick={() => addContractOwnerForm.reset()} disabled={isSubmitting}>
-                      Reset
-                    </Button>
-                    <Button type="submit" form="add-sale-form" disabled={isSubmitting}>
-                      {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CirclePile className="h-4 w-4" />}
-                      Submit
-                    </Button>
-                  </Field>
                 </form>  
             </div>
           </div>
+          <DialogFooter>
+            <Field orientation="horizontal" className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => addContractOwnerForm.reset()} disabled={isSubmitting}>
+                Reset
+              </Button>
+              <Button type="submit" form="add-sale-form" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CirclePile className="h-4 w-4" />}
+                Submit
+              </Button>
+            </Field>
+          </DialogFooter>
         </DialogContent>
       </form>
     </Dialog>

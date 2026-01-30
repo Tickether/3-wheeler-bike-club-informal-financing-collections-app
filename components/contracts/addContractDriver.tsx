@@ -201,13 +201,38 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
           <div className="mx-auto w-full max-w-sm pb-6">
             <DialogHeader>
               <DialogTitle>Assign Driver</DialogTitle>
-              <DialogDescription>
-                {step === 1 && "Step 1: Driver Information"}
-                {step === 2 && "Step 2: Guarantor Information"}
-                {step === 3 && "Step 3: Contract Details"}
+              <DialogDescription className="flex flex-row items-center justify-between mb-4">
+                <div className="flex flex-col gap-2">
+                  {step === 1 && "Step 1/3: Driver Information"}
+                  {step === 2 && "Step 2/3: Guarantor Information"}
+                  {step === 3 && "Step 3/3: Contract Details"}
+                  <div className="flex items-center gap-2">
+                    <div className={`h-2 w-12 rounded-full transition-colors ${step === 1 ? 'bg-primary' : step > 1 ? 'bg-primary/50' : 'bg-muted'}`} />
+                    <div className={`h-2 w-12 rounded-full transition-colors ${step === 2 ? 'bg-primary' : step > 2 ? 'bg-primary/50' : 'bg-muted'}`} />
+                    <div className={`h-2 w-12 rounded-full transition-colors ${step === 3 ? 'bg-primary' : 'bg-muted'}`} />
+                  </div>
+                </div>
+                <div className="flex flex-row items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setStep(step - 1)}
+                    disabled={step === 1 || isSubmitting}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => setStep(step + 1)}
+                    disabled={step === 3 || isSubmitting}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </DialogDescription>
+              
             </DialogHeader>
-            <div className="flex flex-col p-4 no-scrollbar -mx-4 max-h-[50vh] overflow-y-auto">
+            <div className="flex flex-col p-4 no-scrollbar -mx-4 h-[50vh] overflow-y-auto">
                 <form
                   className="space-y-6"
                   id="add-inventory-form"
@@ -970,75 +995,22 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                       )
                     }
                   </FieldGroup>
-                  
-                  {/* Step Navigation Footer */}
-                  <div className="flex flex-col gap-6 mt-12 pt-6 border-t">
-                    {/* Step Indicator */}
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className={`h-2 w-12 rounded-full transition-colors ${step === 1 ? 'bg-primary' : step > 1 ? 'bg-primary/50' : 'bg-muted'}`} />
-                        <div className={`h-2 w-12 rounded-full transition-colors ${step === 2 ? 'bg-primary' : step > 2 ? 'bg-primary/50' : 'bg-muted'}`} />
-                        <div className={`h-2 w-12 rounded-full transition-colors ${step === 3 ? 'bg-primary' : 'bg-muted'}`} />
-                      </div>
-                      <span className="text-sm font-medium text-muted-foreground">
-                        Step {step} of 3
-                      </span>
-                    </div>
-                    
-                    {/* Navigation Buttons */}
-                    <div className="flex items-center justify-between gap-3">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => {
-                          addContractDriverForm.reset()
-                          setStep(1)
-                        }} 
-                        disabled={isSubmitting}
-                        className="min-w-[80px]"
-                      >
-                        Reset
-                      </Button>
-                      
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setStep(step - 1)}
-                          disabled={step === 1 || isSubmitting}
-                          className="min-w-[100px]"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                          Previous
-                        </Button>
-                        {step < 3 ? (
-                          <Button
-                            type="button"
-                            onClick={() => setStep(step + 1)}
-                            disabled={isSubmitting}
-                            className="w-[120px]"
-                          >
-                            Next
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <Button 
-                            type="submit" 
-                            form="add-inventory-form" 
-                            disabled={isSubmitting}
-                            className="w-[120px]"
-                          >
-                            {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CirclePile className="h-4 w-4" />}
-                            Submit
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
                 </form>  
             </div>
           </div>
+          <DialogFooter>
+            <Field orientation="horizontal" className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => addContractDriverForm.reset()} disabled={isSubmitting}>
+                Reset
+              </Button>
+              <Button type="submit" form="add-contract-driver-form" disabled={step !== 3 || isSubmitting}>
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <CirclePile className="h-4 w-4" />}
+                Submit
+              </Button>
+            </Field>
+          </DialogFooter>
         </DialogContent>
+        
       </form>
     </Dialog>
   )
