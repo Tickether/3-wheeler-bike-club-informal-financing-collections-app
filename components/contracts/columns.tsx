@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Contract } from "@/hooks/useGetContracts";
-import { CreditCard, MoreHorizontal, UserLock } from "lucide-react" 
+import { CreditCard, File, MoreHorizontal, Signature, UserLock } from "lucide-react" 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -106,6 +106,7 @@ export const columns: ColumnDef<Contract>[] = [
         id: "actions",
         cell: ({ row }) => {
           const contract = row.original
+          const status = row.original.status
 
           const [openAddContractDriver, setOpenAddContractDriver] = useState(false)
           const [openAddContractPayment, setOpenAddContractPayment] = useState(false)
@@ -128,11 +129,22 @@ export const columns: ColumnDef<Contract>[] = [
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onSelect={handleOpenAddContractDriver}>
-                  <UserLock /> Assign Driver
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={handleOpenAddContractPayment}>
-                    <CreditCard /> Add Payment
+                  {
+                    status === "pending" && (
+                      <DropdownMenuItem onSelect={handleOpenAddContractDriver}>
+                        <UserLock /> Assign Driver
+                      </DropdownMenuItem>
+                    )
+                  }
+                  {
+                    status === "active" && (
+                      <DropdownMenuItem onSelect={handleOpenAddContractPayment}>
+                        <CreditCard /> Add Payment
+                      </DropdownMenuItem>
+                    )
+                  }
+                  <DropdownMenuItem>
+                  <Signature /> View Contract
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
