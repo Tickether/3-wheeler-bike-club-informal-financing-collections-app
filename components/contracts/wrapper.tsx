@@ -1,21 +1,20 @@
 "use client";
 
-import { FileText, Plus, TriangleAlert } from "lucide-react";
+import { FileText, TriangleAlert } from "lucide-react";
 import { Menu } from "@/components/top/menu";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from "@/components/ui/empty";
 import { useGetContracts } from "@/hooks/useGetContracts";
+import { ContractsProvider } from "./contractsContext";
 import { AddContractOwner } from "./addContractOwner";
 import { DataTable } from "./dataTable";
 import { columns } from "./columns";
 
 export function Wrapper() {
-
-
     const { contracts, loading, error, getBackContracts } = useGetContracts()
 
-    
     return (
+        <ContractsProvider getBackContracts={getBackContracts}>
         <div className="flex flex-col h-full p-4 md:p-6 lg:p-8 w-full gap-6">
             <Menu/>
 
@@ -80,6 +79,7 @@ export function Wrapper() {
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
+        </ContractsProvider>
     )
 }

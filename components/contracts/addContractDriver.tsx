@@ -10,7 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Contract, useGetContracts } from "@/hooks/useGetContracts"
+import { Contract } from "@/hooks/useGetContracts"
+import { useContractsContext } from "./contractsContext"
 import * as z from "zod"
 import {
   Field,
@@ -129,7 +130,7 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
   const [installment, setInstallment] = useState<number | null>(null)
   console.log(installment)
 
-  const { getBackContracts } = useGetContracts()
+  const contractsContext = useContractsContext()
 
   // Reset to step 1 when dialog opens
   useEffect(() => {
@@ -243,7 +244,10 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
               addContractDriverForm.reset()
               setEndDate(null)
               setInstallment(null)
-              getBackContracts()
+              setStep(1)
+              await contractsContext?.getBackContracts?.()
+              onOpenChange(false)
+
             } else {
               toast.error("Failed to update contract driver plus guarantor", {
                 description: "Something went wrong, please try again",

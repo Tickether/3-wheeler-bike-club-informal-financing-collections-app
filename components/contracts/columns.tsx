@@ -48,7 +48,7 @@ export const columns: ColumnDef<Contract>[] = [
         accessorKey: "driver.firstname",
         header: "Driver Name",
         cell: ({ row }) => {
-            const status = row.getValue("status") as string
+            const status = row.original.status
             const driver = row.original.driver?.firstname
             if (status === "active") {
                 return <span>{driver}</span>
@@ -61,7 +61,7 @@ export const columns: ColumnDef<Contract>[] = [
         accessorKey: "driver.phone",
         header: "Driver Phone",
         cell: ({ row }) => {
-            const status = row.getValue("status") as string
+            const status = row.original.status
             const driver = row.original.driver?.phone
             if (status === "active") {
                 return <span>{driver}</span>
@@ -74,7 +74,7 @@ export const columns: ColumnDef<Contract>[] = [
       accessorKey: "installment",
       header: "Installment",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string
+        const status = row.original.status
         const installment = row.original.installment
         if (status === "active") {
             return <span>{installment}</span>
@@ -87,7 +87,7 @@ export const columns: ColumnDef<Contract>[] = [
       accessorKey: "payments",
       header: "Payments",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string
+        const status = row.original.status
         const payments = row.original.payments
         const duration = row.original.duration
         const start = row.original.start
