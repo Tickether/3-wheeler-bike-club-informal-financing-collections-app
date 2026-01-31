@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Contract } from "@/hooks/useGetContracts"
+import { Contract, useGetContracts } from "@/hooks/useGetContracts"
 import * as z from "zod"
 import {
   Field,
@@ -32,6 +32,7 @@ import { PhoneInput } from "@/components/ui/phone-input"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from "date-fns"
+import { updateContractDriverPlusGuarantorAction } from "@/app/actions/contracts/updateContractDriverPlusGuarantorAction"
 
 // Helper function to format number with commas
 const formatNumberWithCommas = (value: string): string => {
@@ -128,6 +129,8 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
   const [installment, setInstallment] = useState<number | null>(null)
   console.log(installment)
 
+  const { getBackContracts } = useGetContracts()
+
   // Reset to step 1 when dialog opens
   useEffect(() => {
     if (open) {
@@ -199,7 +202,66 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
       setIsSubmitting(true)
       console.log(value)
       try {
-        
+        if (endDate && installment) {
+          const uploadDriverHeadshotFiles = await startUploadHeadshot(value.driverHeadshot);
+          const uploadDriverNationalFiles = await startUploadNational(value.driverNational);
+          const uploadGuarantorHeadshotFiles = await startUploadHeadshot(value.guarantorHeadshot);
+          const uploadGuarantorNationalFiles = await startUploadNational(value.guarantorNational);
+          if (uploadDriverHeadshotFiles && uploadDriverNationalFiles && uploadGuarantorHeadshotFiles && uploadGuarantorNationalFiles) {
+            const updateContractDriverPlusGuarantor = await updateContractDriverPlusGuarantorAction(
+              contract._id,
+              {
+                firstname: value.driverFirstName,
+                othername: value.driverOtherName,
+                lastname: value.driverLastName,
+                phone: value.driverPhone,
+                location: value.driverLocation,
+                headshot: uploadDriverHeadshotFiles.map((file) => file.ufsUrl),
+                national: uploadDriverNationalFiles.map((file) => file.ufsUrl),
+              },
+              {
+                firstname: value.guarantorFirstName,
+                othername: value.guarantorOtherName,
+                lastname: value.guarantorLastName,
+                phone: value.guarantorPhone,
+                location: value.guarantorLocation,
+                headshot: uploadGuarantorHeadshotFiles.map((file) => file.ufsUrl),
+                national: uploadGuarantorNationalFiles.map((file) => file.ufsUrl),
+              },
+              Number(value.deposit),
+              value.start!,
+              endDate,
+              Number(value.duration),
+              Number(value.amount),
+              installment,
+            )
+            if (updateContractDriverPlusGuarantor) {
+              toast.success("Contract driver plus guarantor updated successfully", {
+                description: "You can now add another contract driver plus guarantor or close this dialog",
+              })
+              setIsSubmitting(false)
+              addContractDriverForm.reset()
+              setEndDate(null)
+              setInstallment(null)
+              getBackContracts()
+            } else {
+              toast.error("Failed to update contract driver plus guarantor", {
+                description: "Something went wrong, please try again",
+              })
+              setIsSubmitting(false)
+            }
+          } else {
+            toast.error("Failed to upload files.", {
+              description: `Something went wrong, please try again`,
+            })
+            setIsSubmitting(false)
+          }
+        } else {
+          toast.error("End date and installment are required", {
+            description: "Please make sure these details apply to your contract before submitting",
+          })
+          setIsSubmitting(false)
+        }
       } catch (error) {
         console.error("Form submission error", error);
         toast.error("Failed to submit the form.", {

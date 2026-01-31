@@ -10,8 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Caravan, CirclePile, CloudUpload, Loader2, Motorbike, Paperclip, Plus, Save } from "lucide-react"
+import { Caravan, CirclePile, Loader2, Motorbike, Paperclip, Plus, Save } from "lucide-react"
 import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import * as z from "zod"
@@ -26,10 +25,7 @@ import {
 } from "@/components/ui/field"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput } from "@/components/ui/file-upload"
-import { shortenTxt } from "@/utils/shorten"
 import { useState } from "react"
-import { useUploadThing } from "@/hooks/useUploadThing"
 import { postInventoryAction } from "@/app/actions/inventory/postInventoryAction"
 
 // Helper function to format number with commas

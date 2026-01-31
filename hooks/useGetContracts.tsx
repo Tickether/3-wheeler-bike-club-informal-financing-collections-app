@@ -23,14 +23,17 @@ export interface Contract {
         lastname: string
         phone: string
         location: string
-        national: string
+        headshot: File[]
+        national: File[]
     }
     guarantor?: {
         firstname: string
         othername: string
         lastname: string
         phone: string
-        national: string
+        location: string
+        headshot: File[]
+        national: File[]
     }
     deposit: number
     start: Date

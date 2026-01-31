@@ -55,10 +55,10 @@ const ContractSchema = new mongoose.Schema(
                 type: String,
             },
             headshot:{
-                type: String,
+                type: [String],
             },
             national:{
-                type: String,
+                type: [String],
             }
         },
         guarantor: {
@@ -78,10 +78,10 @@ const ContractSchema = new mongoose.Schema(
                 type: String,
             },
             headshot:{
-                type: String,
+                type: [String],
             },
             national: {
-                type: String,
+                type: [String],
             },
         },
         deposit: {

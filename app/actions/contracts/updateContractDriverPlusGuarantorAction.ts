@@ -2,8 +2,24 @@
 
 export async function updateContractDriverPlusGuarantorAction(
     _id: string,
-    driver: string,
-    guarantor: string,
+    driver: {
+        firstname: string
+        othername: string
+        lastname: string
+        phone: string
+        location: string
+        headshot: string[]
+        national: string[]
+    },
+    guarantor: {
+        firstname: string
+        othername: string
+        lastname: string
+        phone: string
+        location: string
+        headshot: string[]
+        national: string[]
+    },
     deposit: number,
     start: Date,
     end: Date,

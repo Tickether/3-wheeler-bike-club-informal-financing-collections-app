@@ -6,13 +6,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useState } from "react";
 import { AddContractDriver } from "./addContractDriver";
 import { AddContractPayment } from "./addContractPayment";
+import { getWeeksFromStartDate } from "@/utils/shorten";
 
 export const columns: ColumnDef<Contract>[] = [
     {
@@ -24,36 +23,84 @@ export const columns: ColumnDef<Contract>[] = [
         header: "Type",
     },
     {
-        accessorKey: "vehicle.model",
-        header: "Model",
-    },
-    {
-        accessorKey: "vehicle.color",
-        header: "Color",
-    },
-    {
-        accessorKey: "vehicle.vin",
-        header: "VIN",
-    },
-    {
         accessorKey: "vehicle.license",
         header: "License",
+        cell: ({ row }) => {
+            const license = row.original.vehicle?.license
+            const color = row.original.vehicle?.color
+            return (
+              <div>
+                <span style={{ backgroundColor: color, display: 'inline-block' }} className="w-2 h-2 rounded-full mr-2"></span>
+                <span>{license}</span>
+              </div>
+            )
+        }
     },
     {
         accessorKey: "owner.firstname",
-        header: "First Name",
-    },
-    {
-        accessorKey: "owner.lastname",
-        header: "Last Name",
+        header: "Owner Name",
     },
     {
         accessorKey: "owner.phone",
-        header: "Phone",
+        header: "Owner Phone",
     },
     {
-        accessorKey: "createdAt",
-        header: "Created At",
+        accessorKey: "driver.firstname",
+        header: "Driver Name",
+        cell: ({ row }) => {
+            const status = row.getValue("status") as string
+            const driver = row.original.driver?.firstname
+            if (status === "active") {
+                return <span>{driver}</span>
+            } else {
+                return <span className="text-muted-foreground italic">N/A</span>
+            }
+        }
+    },
+    {
+        accessorKey: "driver.phone",
+        header: "Driver Phone",
+        cell: ({ row }) => {
+            const status = row.getValue("status") as string
+            const driver = row.original.driver?.phone
+            if (status === "active") {
+                return <span>{driver}</span>
+            } else {
+                return <span className="text-muted-foreground italic">N/A</span>
+            }
+        }
+    },
+    {
+      accessorKey: "installment",
+      header: "Installment",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string
+        const installment = row.original.installment
+        if (status === "active") {
+            return <span>{installment}</span>
+        } else {
+            return <span className="text-muted-foreground italic">N/A</span>
+        }
+      }
+    },
+    {
+      accessorKey: "payments",
+      header: "Payments",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string
+        const payments = row.original.payments
+        const duration = row.original.duration
+        const start = row.original.start
+
+        // Current week from start, with start week counting as week 1
+        const currentWeek = getWeeksFromStartDate(new Date(start))
+
+        if (status === "active") {
+            return <span>{payments?.length}/{currentWeek}/{duration}</span>
+        } else {
+            return <span className="text-muted-foreground italic">N/A</span>
+        }
+      }
     },
     {
         id: "actions",
