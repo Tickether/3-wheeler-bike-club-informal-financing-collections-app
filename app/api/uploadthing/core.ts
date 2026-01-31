@@ -41,7 +41,7 @@ export const ourFileRouter = {
     }),
 
     headshotUploader: f({
-      pdf: {
+      image: {
         /**
          * For full list of options and defaults, see the File Route API reference
          * @see https://docs.uploadthing.com/file-routes#route-config

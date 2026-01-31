@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Contract } from "@/hooks/useGetContracts"
 import * as z from "zod"
 import {
@@ -18,11 +17,8 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldContent,
-  FieldTitle,
-  FieldDescription,
 } from "@/components/ui/field"
-import React, { useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "@tanstack/react-form"
 import { toast } from "sonner"
 import { useUploadThing } from "@/hooks/useUploadThing"
@@ -32,7 +28,10 @@ import { FileUploader, FileUploaderContent, FileUploaderItem, FileInput
  } from "@/components/ui/file-upload"
 import { CloudUpload, Paperclip } from "lucide-react"
 import { shortenTxt } from "@/utils/shorten"
-import { PhoneInput } from "../ui/phone-input"
+import { PhoneInput } from "@/components/ui/phone-input"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
 
 // Helper function to format number with commas
 const formatNumberWithCommas = (value: string): string => {
@@ -41,6 +40,22 @@ const formatNumberWithCommas = (value: string): string => {
   if (!numericValue) return ''
   // Format with commas
   return parseInt(numericValue, 10).toLocaleString('en-US')
+}
+
+/**
+   * Calculates the end date given a start date and a number of weeks.
+   * @param {Date} startDate - The start date.
+   * @param {number} weeks - The number of weeks to add.
+   * @returns {Date} The calculated end date.
+   */
+function calculateEndDate(startDate: Date, weeks: number): Date {
+  // Defensive copy and ensure positive weeks
+  const result = new Date(startDate.getTime());
+  if (!Number.isFinite(weeks) || !startDate || isNaN(startDate.getTime())) {
+    throw new Error("Invalid arguments passed to calculateEndDate");
+  }
+  result.setDate(result.getDate() + weeks * 7);
+  return result;
 }
 
 const addContractDriverFormSchema = z.object({
@@ -88,17 +103,14 @@ const addContractDriverFormSchema = z.object({
     .string()
     .min(1, "Deposit is required"),
   start: z
-    .string()
-    .min(1, "Start date is required"),
+    .date(),
+    // No minimum date requirement, accept any date
   duration: z
     .string()
     .min(1, "Duration in weeks is required"),
   amount: z
     .string()
     .min(1, "Amount is required"),
-  installment: z
-    .string()
-    .min(1, "Installment is required"),
 })
 
 interface AddContractDriverProps {
@@ -110,7 +122,11 @@ interface AddContractDriverProps {
 export function AddContractDriver({ open, onOpenChange, contract }: AddContractDriverProps) {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [ step, setStep ] = useState(1)
+  const [step, setStep] = useState(1)
+  const [endDate, setEndDate] = useState<Date | null>(null)
+  console.log(endDate)
+  const [installment, setInstallment] = useState<number | null>(null)
+  console.log(installment)
 
   // Reset to step 1 when dialog opens
   useEffect(() => {
@@ -119,6 +135,8 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
     }
   }, [open])
 
+
+  
   const { startUpload: startUploadHeadshot, routeConfig: routeConfigHeadshot } = useUploadThing("headshotUploader", {
     onClientUploadComplete: () => {
       toast.info("Headshot Uploaded", {
@@ -170,10 +188,9 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
       guarantorHeadshot: [] as File[],
       guarantorNational: [] as File[],
       deposit: "",
-      start: "",
+      start: undefined as Date | undefined,
       duration: "",
       amount: "",
-      installment: "",
     },
     validators: {
       onSubmit: addContractDriverFormSchema,
@@ -193,6 +210,8 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
     },
   })
 
+  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <form>
@@ -207,9 +226,9 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                   {step === 2 && "Step 2/3: Guarantor Information"}
                   {step === 3 && "Step 3/3: Contract Details"}
                   <div className="flex items-center gap-2">
-                    <div className={`h-2 w-12 rounded-full transition-colors ${step === 1 ? 'bg-primary' : step > 1 ? 'bg-primary/50' : 'bg-muted'}`} />
-                    <div className={`h-2 w-12 rounded-full transition-colors ${step === 2 ? 'bg-primary' : step > 2 ? 'bg-primary/50' : 'bg-muted'}`} />
-                    <div className={`h-2 w-12 rounded-full transition-colors ${step === 3 ? 'bg-primary' : 'bg-muted'}`} />
+                    <span className={`h-2 w-12 rounded-full transition-colors ${step === 1 ? 'bg-primary' : step > 1 ? 'bg-primary/50' : 'bg-gray-300'}`} />
+                    <span className={`h-2 w-12 rounded-full transition-colors ${step === 2 ? 'bg-primary' : step > 2 ? 'bg-primary/50' : 'bg-gray-300'}`} />
+                    <span className={`h-2 w-12 rounded-full transition-colors ${step === 3 ? 'bg-primary' : 'bg-gray-300'}`} />
                   </div>
                 </div>
                 <div className="flex flex-row items-center gap-1">
@@ -235,7 +254,7 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
             <div className="flex flex-col p-4 no-scrollbar -mx-4 h-[50vh] overflow-y-auto">
                 <form
                   className="space-y-6"
-                  id="add-inventory-form"
+                  id="add-contract-driver-form"
                   onSubmit={(e) => {
                     e.preventDefault()
                     addContractDriverForm.handleSubmit()
@@ -393,7 +412,7 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                                         }}
                                         disabled={isSubmitting}
                                         aria-invalid={isInvalid}
-                                        placeholder="Smith"
+                                        placeholder="Blue Top Vila, Kosoa"
                                         autoComplete="off"
                                         style={{ textTransform: 'uppercase' }}
                                       />
@@ -679,7 +698,7 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                                         }}
                                         disabled={isSubmitting}
                                         aria-invalid={isInvalid}
-                                        placeholder="Smith"
+                                        placeholder="Blue Top Vila, Kasoa"
                                         autoComplete="off"
                                         style={{ textTransform: 'uppercase' }}
                                       />
@@ -836,6 +855,7 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                                           const rawValue = e.target.value.replace(/\D/g, '')
                                           // Store raw numeric value (without commas) in form state
                                           field.handleChange(rawValue)
+
                                         }}
                                         aria-invalid={isInvalid}
                                         placeholder="5,000"
@@ -861,24 +881,36 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                                 <Field data-invalid={isInvalid}>
                                   <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                                   <FieldLabel htmlFor={field.name} className="text-primary">Start Date</FieldLabel>
-                                      <Input
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value ? formatNumberWithCommas(field.state.value) : ''}
-                                        onBlur={field.handleBlur}
-                                        onChange={(e) => {
-                                          // Remove all non-numeric characters
-                                          const rawValue = e.target.value.replace(/\D/g, '')
-                                          // Store raw numeric value (without commas) in form state
-                                          field.handleChange(rawValue)
+                                  <Popover>
+                                    <PopoverTrigger disabled={isSubmitting} asChild>
+                                      <Button
+                                        variant="outline"
+                                        id="date-picker-simple"
+                                        className="justify-start font-normal"
+                                      >
+                                        {field.state.value ? format(field.state.value, "PPP") : <span>Pick a date</span>}
+                                      </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                      <Calendar
+                                        mode="single"
+                                        selected={field.state.value}
+                                        onSelect={(date) => {
+                                          field.handleChange(date || new Date())
+                                          if (date) {
+                                            setEndDate(calculateEndDate(date as Date, Number(addContractDriverForm.getFieldValue("duration"))))
+                                          }
+                                          if (date === undefined) {
+                                            setEndDate(null)
+                                          }
+                                          if (addContractDriverForm.getFieldValue("duration") === '') {
+                                            setEndDate(null)
+                                          }
                                         }}
-                                        aria-invalid={isInvalid}
-                                        placeholder="2026-01-01"
-                                        autoComplete="off"
-                                        type="text"
-                                        inputMode="numeric"
-                                        disabled={isSubmitting}
+                                        defaultMonth={ field.state.value }
                                       />
+                                    </PopoverContent>
+                                  </Popover>
                                       {isInvalid && (
                                         <FieldError errors={field.state.meta.errors} />
                                       )}
@@ -903,9 +935,36 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                                         onBlur={field.handleBlur}
                                         onChange={(e) => {
                                           // Remove all non-numeric characters
-                                          const rawValue = e.target.value.replace(/\D/g, '')
+                                          let rawValue = e.target.value.replace(/\D/g, '');
+                                          if (rawValue.length > 0) {
+                                            rawValue = (Math.min(Number(rawValue), 300)).toString();
+                                          }
                                           // Store raw numeric value (without commas) in form state
                                           field.handleChange(rawValue)
+                                          // Calculate installment
+                                          if (addContractDriverForm.getFieldValue("amount") !== '' ) {
+                                            if (Number(rawValue) > Number(addContractDriverForm.getFieldValue("amount"))) {
+                                              setInstallment(null)
+                                            } else {
+                                              setInstallment(Math.round(Number(addContractDriverForm.getFieldValue("amount")) / Number(rawValue)))
+                                            }
+                                          }
+                                          if (addContractDriverForm.getFieldValue("amount") === '') {
+                                            setInstallment(null)
+                                          }
+                                          if (addContractDriverForm.getFieldValue("duration") === '') {
+                                            setInstallment(null)
+                                          }
+                                          // Calculate end date
+                                          if (addContractDriverForm.getFieldValue("start") !== undefined && addContractDriverForm.getFieldValue("duration") !== '') {
+                                            setEndDate(calculateEndDate(addContractDriverForm.getFieldValue("start") as Date, Number(rawValue)))
+                                          }
+                                          if (addContractDriverForm.getFieldValue("start") === undefined) {
+                                            setEndDate(null)
+                                          }
+                                          if (addContractDriverForm.getFieldValue("duration") === '') {
+                                            setEndDate(null)
+                                          }
                                         }}
                                         aria-invalid={isInvalid}
                                         placeholder="93"
@@ -941,6 +1000,16 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                                           const rawValue = e.target.value.replace(/\D/g, '')
                                           // Store raw numeric value (without commas) in form state
                                           field.handleChange(rawValue)
+                                          if (addContractDriverForm.getFieldValue("duration") !== '' ) {
+                                            if (Number(rawValue) < Number(addContractDriverForm.getFieldValue("duration"))) {
+                                              setInstallment(null)
+                                            } else {
+                                              setInstallment(Math.round(Number(rawValue) / Number(addContractDriverForm.getFieldValue("duration"))))
+                                            }
+                                          }
+                                          if (addContractDriverForm.getFieldValue("duration") === '') {
+                                            setInstallment(null)
+                                          }
                                         }}
                                         aria-invalid={isInvalid}
                                         placeholder="93,000"
@@ -957,40 +1026,26 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
                               )
                             }}
                           />
-                          <addContractDriverForm.Field
-                            name="installment"
-                            children={(field) => {
-                              const isInvalid =
-                                field.state.meta.isTouched && !field.state.meta.isValid
-                              return (
-                                <Field data-invalid={isInvalid}>
-                                  <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                                  <FieldLabel htmlFor={field.name} className="text-primary">Installment Amount(GHS)</FieldLabel>
-                                      <Input
-                                        id={field.name}
-                                        name={field.name}
-                                        value={field.state.value ? formatNumberWithCommas(field.state.value) : ''}
-                                        onBlur={field.handleBlur}
-                                        onChange={(e) => {
-                                          // Remove all non-numeric characters
-                                          const rawValue = e.target.value.replace(/\D/g, '')
-                                          // Store raw numeric value (without commas) in form state
-                                          field.handleChange(rawValue)
-                                        }}
-                                        aria-invalid={isInvalid}
-                                        placeholder="1,000"
-                                        autoComplete="off"
-                                        type="number"
-                                        disabled={isSubmitting}
-                                      />
-                                      {isInvalid && (
-                                        <FieldError errors={field.state.meta.errors} />
-                                      )}
+                          <div>
+                            {installment != null && endDate && (
+                              <div className="mt-4 rounded-lg border bg-muted/30 px-4 py-3">
+                                <div className="flex flex-col gap-2 text-sm">
+                                  <div className="flex items-center justify-between gap-4">
+                                    <span className="text-muted-foreground">Installment</span>
+                                    <span className="font-medium tabular-nums">
+                                      GHS {installment.toLocaleString()}
+                                    </span>
                                   </div>
-                                </Field>
-                              )
-                            }}
-                          />
+                                  <div className="flex items-center justify-between gap-4">
+                                    <span className="text-muted-foreground">End date</span>
+                                    <span className="font-medium">
+                                      {format(endDate, "PPP")}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </>
                       )
                     }
@@ -1000,7 +1055,7 @@ export function AddContractDriver({ open, onOpenChange, contract }: AddContractD
           </div>
           <DialogFooter>
             <Field orientation="horizontal" className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => addContractDriverForm.reset()} disabled={isSubmitting}>
+              <Button type="button" variant="outline" onClick={() => {addContractDriverForm.reset(); setStep(1); setEndDate(null); setInstallment(null)}} disabled={isSubmitting}>
                 Reset
               </Button>
               <Button type="submit" form="add-contract-driver-form" disabled={step !== 3 || isSubmitting}>
