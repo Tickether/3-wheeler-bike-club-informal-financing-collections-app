@@ -151,10 +151,8 @@ export function Wrapper() {
                             contractsForTable && contractsForTable.length >= 1 && (
                                 <>
                                     <div className="flex flex-col w-full gap-4">
-                                        <div className="flex justify-end">
-                                            <AddContractOwner getContracts={getBackContracts} />
-                                        </div>
-                                        <DataTable columns={columns} data={contractsForTable} />
+                                        
+                                        <DataTable columns={columns} data={contractsForTable} getContracts={getBackContracts} />
                                     </div>
                                 </>
                             )

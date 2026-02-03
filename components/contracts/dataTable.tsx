@@ -21,15 +21,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
 import { useState } from "react"
 import { Input } from "../ui/input"
+import { AddContractOwner } from "./addContractOwner"
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    data: TData[]   
+    getContracts: () => void
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    getContracts,
 }: DataTableProps<TData, TValue>) {
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -48,15 +51,17 @@ export function DataTable<TData, TValue>({
 
     return (
         <div>
-            <div className="flex items-center py-4">
+            <div className="flex items-center py-4 gap-4">
                 <Input
                     placeholder="Filter License Plate Numbers..."
                     value={(table.getColumn("vehicleLicense")?.getFilterValue() as string) ?? ""}
                     onChange={(event) =>
                         table.getColumn("vehicleLicense")?.setFilterValue(event.target.value)
                     }
-                    className="max-w-sm"
                 />
+                <div className="flex justify-end">
+                    <AddContractOwner getContracts={getContracts} />
+                </div>
             </div>
             <div className="w-full rounded-md border">
                 <Table>
