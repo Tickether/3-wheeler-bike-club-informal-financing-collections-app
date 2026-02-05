@@ -3,7 +3,8 @@ import { useState, useEffect } from "react"
 
 export interface Contract {
     _id: string
-    branch: "kasoa" | "kumasi"
+    branch: "head-office-kasoa" | "walantu-kasoa" | "escobar-kasoa" | "buduburam-liberia-camp" | "gyinyase-kumasi"
+    serial: string
     vehicle: {
         type: "motorcycle" | "tricycle"
         model: string

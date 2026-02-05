@@ -34,6 +34,9 @@ const addContractOwnerFormSchema = z.object({
   branch: z
     .string()
     .min(1, "Branch is required"),
+  serial: z
+    .string()
+    .min(1, "Serial is required"),
   vehicleType: z
   .string()
   .min(1, "Vehicle type is required"),
@@ -74,6 +77,7 @@ export function AddContractOwner({ getContracts }: AddContractOwnerProps) {
   const addContractOwnerForm = useForm({
     defaultValues: {
       branch: "",
+      serial: "",
       vehicleType: "",
       vehicleModel: "",
       vehicleColor: "",
@@ -94,6 +98,7 @@ export function AddContractOwner({ getContracts }: AddContractOwnerProps) {
       try {
         const postContractOwnerPlusVehicle = await postContractOwnerPlusVehicleAction(
           value.branch,
+          value.serial,
           {
             type: value.vehicleType as "motorcycle" | "tricycle",
             model: value.vehicleModel,
@@ -178,11 +183,47 @@ export function AddContractOwner({ getContracts }: AddContractOwnerProps) {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
-                                      <SelectItem value="kasoa">Kasoa</SelectItem>
-                                      <SelectItem value="kumasi">Kumasi</SelectItem>
+                                      <SelectItem value="head-office-kasoa">Head Office Kasoa</SelectItem>
+                                      <SelectItem value="walantu-kasoa">Walantu Kasoa</SelectItem>
+                                      <SelectItem value="escobar-kasoa">Escobar Kasoa</SelectItem>
+                                      <SelectItem value="buduburam-liberia-camp">Buduburam Liberia Camp</SelectItem>
+                                      <SelectItem value="gyinyase-kumasi">Gyinyase Kumasi</SelectItem>
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>
+                                {isInvalid && (
+                                  <FieldError errors={field.state.meta.errors} />
+                                )}
+                            </div>
+                          </Field>
+                        )
+                      }}
+                    />
+                    <addContractOwnerForm.Field
+                      name="serial"
+                      children={(field) => {
+                        const isInvalid =
+                          field.state.meta.isTouched && !field.state.meta.isValid
+                        return (
+                          <Field data-invalid={isInvalid}>
+                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                            <FieldLabel htmlFor={field.name} className="text-primary">Serial</FieldLabel>
+                                <Input
+                                  id={field.name}
+                                  name={field.name}
+                                  value={field.state.value}
+                                  onBlur={field.handleBlur}
+                                  onChange={(e) => {
+                                    // Convert to uppercase and only allow alphanumeric characters
+                                    const uppercaseValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
+                                    field.handleChange(uppercaseValue)
+                                  }}
+                                  aria-invalid={isInvalid}
+                                  placeholder="PKS 10"
+                                  autoComplete="off"
+                                  style={{ textTransform: 'uppercase' }}
+                                  disabled={isSubmitting}
+                                />
                                 {isInvalid && (
                                   <FieldError errors={field.state.meta.errors} />
                                 )}

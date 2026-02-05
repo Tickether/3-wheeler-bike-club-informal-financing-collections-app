@@ -10,12 +10,13 @@ export async function POST(
         return authResponse
     }
 
-    const { branch, owner, vehicle } = await req.json()
+    const { branch, serial, owner, vehicle } = await req.json()
 
     try {
         await connectDB()
         const contract = await Contract.create({ 
             branch: branch,
+            serial: serial,
             vehicle: vehicle,
             owner: owner,
             status: "pending",

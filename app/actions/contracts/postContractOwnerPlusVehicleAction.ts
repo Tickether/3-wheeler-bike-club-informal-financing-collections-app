@@ -2,6 +2,7 @@
 
 export async function postContractOwnerPlusVehicleAction(
     branch: string,
+    serial: string,
     vehicle: {
         type: "motorcycle" | "tricycle"
         model: string
@@ -26,6 +27,7 @@ export async function postContractOwnerPlusVehicleAction(
             },
             body: JSON.stringify({ 
                 branch: branch,
+                serial: serial,
                 vehicle: vehicle,
                 owner: owner,
             })

@@ -4,8 +4,8 @@ const SaleSchema = new mongoose.Schema(
     {
         branch: {
             type: String,
-            enum: ["kasoa", "kumasi"],
-        },
+            enum: ["head-office-kasoa", "walantu-kasoa", "escobar-kasoa", "buduburam-liberia-camp", "gyinyase-kumasi"],
+        },        
         vehicle: {
             type: {
                 type: String,

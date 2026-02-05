@@ -156,8 +156,11 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
-                                      <SelectItem value="kasoa">Kasoa</SelectItem>
-                                      <SelectItem value="kumasi">Kumasi</SelectItem>
+                                      <SelectItem value="head-office-kasoa">Head Office Kasoa</SelectItem>
+                                      <SelectItem value="walantu-kasoa">Walantu Kasoa</SelectItem>
+                                      <SelectItem value="escobar-kasoa">Escobar Kasoa</SelectItem>
+                                      <SelectItem value="buduburam-liberia-camp">Buduburam Liberia Camp</SelectItem>
+                                      <SelectItem value="gyinyase-kumasi">Gyinyase Kumasi</SelectItem>
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>
