@@ -3,9 +3,9 @@ import { useState, useEffect } from "react"
 
 export interface Sale {
     _id: string
-    branch: "kasoa" | "kumasi"
+    branch: string
     vehicle: {
-        type: "motorcycle" | "tricycle"
+        type: string
         model: string
         color: string
         vin: string

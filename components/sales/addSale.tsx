@@ -44,6 +44,7 @@ import { useEffect, useState } from "react"
 import { postSaleAction } from "@/app/actions/sales/postSaleAction"
 import { toast } from "sonner"
 import { updateInventoryAction } from "@/app/actions/inventory/updateInventoryAction"
+import { BRANCHES, VEHICLE_TYPES } from "@/utils/constants"
 
 
 const addSaleFormSchema = z.object({
@@ -142,7 +143,7 @@ export function AddSale({ inventory, getSales }: AddSaleProps) {
           const postSale = await postSaleAction(
             value.branch,
             {
-              type: sale?.vehicle.type as "motorcycle" | "tricycle",
+              type: sale?.vehicle.type,
               model: sale?.vehicle.model,
               color: sale?.vehicle.color,
               vin: sale?.vehicle.vin,
@@ -246,11 +247,9 @@ export function AddSale({ inventory, getSales }: AddSaleProps) {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
-                                      <SelectItem value="head-office-kasoa">Head Office Kasoa</SelectItem>
-                                      <SelectItem value="walantu-kasoa">Walantu Kasoa</SelectItem>
-                                      <SelectItem value="escobar-kasoa">Escobar Kasoa</SelectItem>
-                                      <SelectItem value="buduburam-liberia-camp">Buduburam Liberia Camp</SelectItem>
-                                      <SelectItem value="gyinyase-kumasi">Gyinyase Kumasi</SelectItem>
+                                      {BRANCHES.map((branch) => (
+                                        <SelectItem key={branch.value} value={branch.value}>{branch.name}</SelectItem>
+                                      ))}
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>
@@ -272,7 +271,7 @@ export function AddSale({ inventory, getSales }: AddSaleProps) {
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                             <FieldLabel htmlFor={field.name} className="text-primary">Type</FieldLabel>
                             <RadioGroup 
-                              className="max-w-full"
+                              className="grid max-w-full grid-cols-2 gap-2"
                               value={field.state.value}
                               onValueChange={(value) => {
                                 field.handleChange(value)
@@ -283,23 +282,16 @@ export function AddSale({ inventory, getSales }: AddSaleProps) {
                               }}
                               disabled={isSubmitting}
                             >
-                              <FieldLabel htmlFor="motorcycle">
-                                <Field orientation="horizontal">
-                                  <FieldContent>
-                                    <FieldTitle> <Motorbike className="h-4 w-4 text-primary" /> Motorcycle </FieldTitle>
-                                  </FieldContent>
-                                  <RadioGroupItem value="motorcycle" id="motorcycle" />
-                                </Field>
-                              </FieldLabel>
-                              <FieldLabel htmlFor="tricycle">
-                                <Field orientation="horizontal">
-                                  <FieldContent>
-                                    <FieldTitle> <Caravan className="h-4 w-4 text-primary" /> Tricycle </FieldTitle>
-                                      
-                                  </FieldContent>
-                                  <RadioGroupItem value="tricycle" id="tricycle" />
-                                </Field>
-                              </FieldLabel>
+                              {VEHICLE_TYPES.map((vehicleType) => (
+                                <FieldLabel htmlFor={vehicleType.value} key={vehicleType.value}>
+                                  <Field orientation="horizontal">
+                                    <FieldContent>
+                                      <FieldTitle> {vehicleType.icon} {vehicleType.name} </FieldTitle>
+                                    </FieldContent>
+                                    <RadioGroupItem value={vehicleType.value} id={vehicleType.value} />
+                                  </Field>
+                                </FieldLabel>
+                              ))}
                             </RadioGroup>
                                 {isInvalid && (
                                   <FieldError errors={field.state.meta.errors} />

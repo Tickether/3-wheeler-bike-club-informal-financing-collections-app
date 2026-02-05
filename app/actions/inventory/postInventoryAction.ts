@@ -3,7 +3,7 @@
 export async function postInventoryAction(
     branch: string,
     vehicle: {
-        type: "motorcycle" | "tricycle"
+        type: string
         model: string
         color: string
         vin: string

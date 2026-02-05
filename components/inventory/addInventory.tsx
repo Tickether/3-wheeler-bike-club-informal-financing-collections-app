@@ -28,6 +28,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useState } from "react"
 import { postInventoryAction } from "@/app/actions/inventory/postInventoryAction"
 import { formatNumberWithCommas } from "@/utils/helpers"
+import { BRANCHES, MODELS, VEHICLE_COLORS, VEHICLE_TYPES } from "@/utils/constants"
 
 
 
@@ -85,7 +86,7 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
         const postInventory = await postInventoryAction(
           value.branch,
           {
-            type: value.vehicleType as "motorcycle" | "tricycle",
+            type: value.vehicleType,
             model: value.vehicleModel,
             color: value.vehicleColor,
             vin: value.vehicleVin,
@@ -156,11 +157,9 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
-                                      <SelectItem value="head-office-kasoa">Head Office Kasoa</SelectItem>
-                                      <SelectItem value="walantu-kasoa">Walantu Kasoa</SelectItem>
-                                      <SelectItem value="escobar-kasoa">Escobar Kasoa</SelectItem>
-                                      <SelectItem value="buduburam-liberia-camp">Buduburam Liberia Camp</SelectItem>
-                                      <SelectItem value="gyinyase-kumasi">Gyinyase Kumasi</SelectItem>
+                                      {BRANCHES.map((branch) => (
+                                        <SelectItem key={branch.value} value={branch.value}>{branch.name}</SelectItem>
+                                      ))}
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>
@@ -182,27 +181,24 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
                             <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
                             <FieldLabel htmlFor={field.name} className="text-primary">Type</FieldLabel>
                             <RadioGroup 
-                              className="max-w-full"
+                              className="grid max-w-full grid-cols-2 gap-2"
                               value={field.state.value}
-                              onValueChange={(value) => field.handleChange(value)}
+                              onValueChange={(value) => {
+                                field.handleChange(value)
+                                addInventoryForm.resetField("vehicleModel")
+                              }}
                               disabled={isSubmitting}
                             >
-                              <FieldLabel htmlFor="motorcycle">
-                                <Field orientation="horizontal">
-                                  <FieldContent>
-                                    <FieldTitle> <Motorbike className="h-4 w-4 text-primary" /> Motorcycle</FieldTitle>
-                                  </FieldContent>
-                                  <RadioGroupItem value="motorcycle" id="motorcycle" />
-                                </Field>
-                              </FieldLabel>
-                              <FieldLabel htmlFor="tricycle">
-                                <Field orientation="horizontal">
-                                  <FieldContent>
-                                    <FieldTitle> <Caravan className="h-4 w-4 text-primary" /> Tricycle</FieldTitle>
-                                  </FieldContent>
-                                  <RadioGroupItem value="tricycle" id="tricycle" />
-                                </Field>
-                              </FieldLabel>
+                              {VEHICLE_TYPES.map((vehicleType) => (
+                                <FieldLabel htmlFor={vehicleType.value} key={vehicleType.value}>
+                                  <Field orientation="horizontal">
+                                    <FieldContent>
+                                      <FieldTitle> {vehicleType.icon} {vehicleType.name} </FieldTitle>
+                                    </FieldContent>
+                                    <RadioGroupItem value={vehicleType.value} id={vehicleType.value} />
+                                  </Field>
+                                </FieldLabel>
+                              ))}
                             </RadioGroup>
                                 {isInvalid && (
                                   <FieldError errors={field.state.meta.errors} />
@@ -212,44 +208,49 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
                         )
                       }}
                     />
-                    <addInventoryForm.Field
-                      name="vehicleModel"
-                      children={(field) => {
-                        const isInvalid =
-                          field.state.meta.isTouched && !field.state.meta.isValid
-                        return (
-                          <Field data-invalid={isInvalid}>
-                            <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
-                            <FieldLabel htmlFor={field.name} className="text-primary">Model</FieldLabel>
-                            <Select
-                              value={field.state.value}
-                              onValueChange={(value) => field.handleChange(value)}
-                              disabled={isSubmitting}
-                            >
-                              <SelectTrigger className="w-full" disabled={isSubmitting}>
-                                <SelectValue placeholder="Select a vehicle model" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>Motorcycle Models</SelectLabel>
-                                  <SelectItem value="tvs-hlx-125-5g">TVS HLX 125 5G</SelectItem>
-                                  <SelectItem value="tvs-apache-rtr-200-4v">TVS Apache RTR 200 4V</SelectItem>
-                                </SelectGroup>
-                                <SelectSeparator />
-                                <SelectGroup>
-                                  <SelectLabel>Tricycle Models</SelectLabel>
-                                  <SelectItem value="tvs-king-deluxe-plus">TVS King Deluxe Plus</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                                {isInvalid && (
-                                  <FieldError errors={field.state.meta.errors} />
-                                )}
-                            </div>
-                          </Field>
-                        )
-                      }}
-                    />
+                    <addInventoryForm.Subscribe
+                      selector={(state) => state.values.vehicleType}
+                    >
+                      {(vehicleType) => (
+                        <addInventoryForm.Field
+                          name="vehicleModel"
+                          children={(field) => {
+                            const isInvalid =
+                              field.state.meta.isTouched && !field.state.meta.isValid
+                            return (
+                              <Field data-invalid={isInvalid}>
+                                <div className="flex flex-col gap-1 w-full max-w-sm space-x-2">
+                                <FieldLabel htmlFor={field.name} className="text-primary">Model</FieldLabel>
+                                <Select
+                                  value={field.state.value}
+                                  onValueChange={(value) => field.handleChange(value)}
+                                  disabled={isSubmitting}
+                                >
+                                  <SelectTrigger className="w-full" disabled={isSubmitting}>
+                                    <SelectValue placeholder="Select a vehicle model" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectLabel>
+                                        Available {vehicleType && vehicleType.replace(/^\w/, c => c.toUpperCase())} Models
+                                      </SelectLabel>
+                                      <SelectSeparator />
+                                      {MODELS.filter((model) => model.type === vehicleType).map((model) => (
+                                        <SelectItem key={model.value} value={model.value}>{model.name}</SelectItem>
+                                      ))}
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                                    {isInvalid && (
+                                      <FieldError errors={field.state.meta.errors} />
+                                    )}
+                                </div>
+                              </Field>
+                            )
+                          }}
+                        />
+                      )}
+                    </addInventoryForm.Subscribe>
                     <addInventoryForm.Field
                       name="vehicleColor"
                       children={(field) => {
@@ -271,11 +272,9 @@ export function AddInventory({ getInventory }: AddInventoryProps) {
                                     //position={alignItemWithTrigger ? "item-aligned" : "popper"}
                                   >
                                     <SelectGroup>
-                                      <SelectItem value="black">Black</SelectItem>
-                                      <SelectItem value="red">Red</SelectItem>
-                                      <SelectItem value="blue">Blue</SelectItem>
-                                      <SelectItem value="green">Green</SelectItem>
-                                      <SelectItem value="yellow">Yellow</SelectItem>
+                                      {VEHICLE_COLORS.map((color) => (
+                                        <SelectItem key={color.value} value={color.value}>{color.name}</SelectItem>
+                                      ))}
                                     </SelectGroup>
                                   </SelectContent>
                                 </Select>

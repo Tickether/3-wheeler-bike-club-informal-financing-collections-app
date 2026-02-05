@@ -3,10 +3,10 @@ import { useState, useEffect } from "react"
 
 export interface Contract {
     _id: string
-    branch: "head-office-kasoa" | "walantu-kasoa" | "escobar-kasoa" | "buduburam-liberia-camp" | "gyinyase-kumasi"
+    branch: string
     serial: string
     vehicle: {
-        type: "motorcycle" | "tricycle"
+        type: string
         model: string
         color: string
         vin: string
@@ -24,8 +24,8 @@ export interface Contract {
         lastname: string
         phone: string
         location: string
-        headshot: File[]
-        national: File[]
+        headshot: string[]
+        national: string[]
     }
     guarantor?: {
         firstname: string
@@ -33,8 +33,8 @@ export interface Contract {
         lastname: string
         phone: string
         location: string
-        headshot: File[]
-        national: File[]
+        headshot: string[]    
+        national: string[]
     }
     deposit: number
     start: Date
@@ -45,11 +45,11 @@ export interface Contract {
     payments?: Array<{
         week: number
         amount: number
-        method: "momo" | "cash"
+        method: string
         reference: Date
-        status: "full" | "partial"
+        status: string
     }>
-    status: "pending" | "active" | "defaulted" | "completed"
+    status: string
     createdAt: Date
     updatedAt: Date
 }

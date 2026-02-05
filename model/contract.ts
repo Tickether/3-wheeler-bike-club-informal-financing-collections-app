@@ -4,7 +4,7 @@ const ContractSchema = new mongoose.Schema(
     {
         branch: {
             type: String,
-            enum: ["head-office-kasoa", "walantu-kasoa", "escobar-kasoa", "buduburam-liberia-camp", "gyinyase-kumasi"],
+            enum: ["head-office-kasoa", "walantu-kasoa", "escobar-kasoa", "buduburam-liberia-camp", "dwenase-sefwi-wiawso"],
         },
         serial:{
             type: String,
@@ -13,7 +13,7 @@ const ContractSchema = new mongoose.Schema(
         vehicle: {
             type: {
                 type: String,
-                enum: ["motorcycle", "tricycle"],
+                enum: ["motorcycle", "scooter", "semi-auto", "tricycle"],
             },
             model: {
                 type: String,

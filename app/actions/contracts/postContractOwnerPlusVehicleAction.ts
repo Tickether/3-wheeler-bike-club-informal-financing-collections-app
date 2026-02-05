@@ -4,7 +4,7 @@ export async function postContractOwnerPlusVehicleAction(
     branch: string,
     serial: string,
     vehicle: {
-        type: "motorcycle" | "tricycle"
+        type: string
         model: string
         color: string
         vin: string

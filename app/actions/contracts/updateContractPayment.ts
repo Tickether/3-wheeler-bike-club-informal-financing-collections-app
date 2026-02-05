@@ -4,9 +4,9 @@ export async function updateContractPaymentAction(
     _id: string,
     week: number,
     amount: number,
-    method: "mobile-money" | "cash",
+    method: string,
     reference: Date,
-    status: "full" | "partial",
+    status: string,
     
 ) {
     try {
