@@ -26,8 +26,14 @@ const MotorSchema = new mongoose.Schema(
                 unique: true,
             }
         },
-        amount: {
+        cost: {
             type: Number,
+        },
+        msrp: {
+            type: Number,
+        },
+        waybill: {
+            type: String,
         },
         status: {
             type: String,

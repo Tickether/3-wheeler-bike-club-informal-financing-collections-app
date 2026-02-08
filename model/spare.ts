@@ -20,9 +20,15 @@ const SpareSchema = new mongoose.Schema(
             serial: {
                 type: String,
             },
-        },
-        amount: {
+        },              
+        cost: {
             type: Number,
+        },
+        msrp: {
+            type: Number,
+        },
+        waybill: {
+            type: String,
         },
         status: {
             type: String,

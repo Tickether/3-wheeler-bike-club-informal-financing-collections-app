@@ -17,7 +17,7 @@ export const BRANCHES = [
         value: "buduburam-liberia-camp",
     },
     {
-        name: "Dwenase Sewi Wiawso",
+        name: "Dwenase Sefwi Wiawso",
         value: "dwenase-sefwi-wiawso",
     },
 ]
